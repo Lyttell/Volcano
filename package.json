@@ -1,0 +1,19 @@
+{
+  "name": "volcano",
+  "version": "0.1.0",
+  "description": "Shitty discord bot",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index"
+  },
+  "keywords": [],
+  "author": "Infinity",
+  "license": "ISC",
+  "dependencies": {
+    "common-errors": "^1.0.4",
+    "discord.js": "^11.2.1",
+    "rethinkdbdash": "^2.3.31",
+    "winston": "^2.4.0",
+    "winston-daily-rotate-file": "^1.7.2"
+  }
+}

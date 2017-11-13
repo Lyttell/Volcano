@@ -1,0 +1,12 @@
+{
+  "token": "YOUR-TOKEN-HERE",
+  "bot": {
+    "owner": "owner-id"
+  },
+  "rethink": {
+    "host": "",
+    "username": "",
+    "password": "",
+    "db": "volcano"
+  }
+}
