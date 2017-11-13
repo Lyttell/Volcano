@@ -44,7 +44,7 @@ fs.readdir(path.join(__dirname, 'commands'), (err, files) => {
   })
 })
 
-
+//test
 //handler.registerModule(new Module('test', {name: 'test module'})).registerCommand(new (require('./commands/test'))(), 'test')
 
 fs.readdir(path.join(__dirname, 'events'), (err, files) => {
