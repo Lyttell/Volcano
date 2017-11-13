@@ -31,13 +31,6 @@ module.exports = class HelpCommand extends Command {
     }
     if(!args || !args[0]) {
       msg.channel.send({embed: membed})
-    } else if(args[0] == 'forceall' && msg.author.id == this.handler.owner) {
-      for(let e in mods) {
-        let embed = mods[e]
-        msg.channel.send({
-          embed
-        })
-      }
     }
   }
 }
