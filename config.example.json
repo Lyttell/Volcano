@@ -3,6 +3,9 @@
   "bot": {
     "owner": "owner-id"
   },
+  "secrets": {
+    "sentry": "DSN"
+  },
   "rethink": {
     "host": "",
     "username": "",
