@@ -18,7 +18,7 @@ module.exports = class HelpCommand extends Command {
     
     for(let mod of modules) {
       let embed = new RichEmbed()
-      membed.addField(mod.name, `»help **${mod.id}**`)
+      membed.addField(mod.name, `${api.prefix}help **${mod.id}**`)
       embed.setTitle(`ℹ \`${mod.name}\``)
       embed.setColor('#55C1FF')
       embed.setTimestamp()
