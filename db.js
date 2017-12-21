@@ -17,7 +17,7 @@ const r = require('rethinkdbdash')({
   db: config.rethink.db,
   pool: true
 })
-
+const cache = {}
 /**
  * DUser class
  */
@@ -100,8 +100,9 @@ class DUser {
    */
   async update() {
     let info = await this.r.table('users').get(this.id).run()
-    init(info)
+    this.init(info)
   }
+
   /**
    * Pushes current data of the DUser object to the DB
    */
@@ -113,6 +114,8 @@ class DUser {
       config: this.config,
       flags: this.flags
     }
+    await this.r.table('users').get(this.id).update(newUser).run()
+    return true
   }
 }
 
@@ -143,12 +146,15 @@ class Database {
   async getUser(user) {
     let id = user
     if(typeof user !== 'string') id = user.id
+    if(cache[id]) return cache[id]
     let i = await this.r.table('users').get(id).run()
     if(typeof i == 'undefined' || !i) {
       await this.makeUser(id)
       return this.getUser(id)
     }
-    return new DUser(i, (user instanceof User ? user : undefined))
+    let duser = new DUser(i, (user instanceof User ? user : undefined))
+    cache[id] = duser
+    return duser
   }
 }
 module.exports = new Database()
