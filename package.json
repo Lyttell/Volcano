@@ -10,8 +10,10 @@
   "author": "Infinity",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.17.1",
     "common-errors": "^1.0.4",
     "discord.js": "^11.2.1",
+    "moment": "^2.20.1",
     "rethinkdbdash": "^2.3.31",
     "winston": "^2.4.0",
     "winston-daily-rotate-file": "^1.7.2"

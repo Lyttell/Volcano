@@ -1,7 +1,13 @@
-
+/**
+ * volcano
+ * 
+ * File...................load.js
+ * Created on.............Wednesday, 20th December 2017 2:31:58 pm
+ * Created by.............Relative
+ * 
+ */
 const path = require('path')
 const { Command } = require('../handler')
-
 
 module.exports = class LoadCommand extends Command {
   constructor() {

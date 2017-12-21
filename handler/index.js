@@ -1,17 +1,25 @@
+/**
+ * volcano
+ * 
+ * File...................index.js
+ * Created on.............Wednesday, 20th December 2017 2:31:58 pm
+ * Created by.............Relative
+ * 
+ */
 const errors = require('common-errors')
 const { Message, Client, User, GuildMember, Channel, TextChannel, DMChannel, Role, RichEmbed } = require('discord.js')
-
-let HandlerOptions = {
+const { Colors, Emoji } = require('../constants')
+const HandlerOptions = {
   client: null,
   name: '*No name defined*',
   owner: '1',
   prefix: '!'
 }
-let ModuleOptions = {
+const ModuleOptions = {
   name: '*No name defined*',
   color: '#C33C54'
 }
-let CommandOptions = {
+const CommandOptions = {
   name: '*No name defined*',
   description: '*No description defined*',
   aliases: [],
@@ -188,6 +196,7 @@ class CommandHandler {
         break
       }
     }
+    if(message.author.id == this.client.user.id || message.author.bot) return false
     if(!prefix) return false
     let c = content.substr(prefix.length).split(' ')
     let command
@@ -202,6 +211,11 @@ class CommandHandler {
       let api = new CommandAPI(message, this, command, prefix)
       let response = await command.run(c.splice(1), message, api)
       if(!!response) {
+        if(response.title && response.description) {
+          return message.channel.send({
+            embed: response
+          })
+        }
         message.channel.send(response)        
       }
     } catch(err) {
@@ -287,18 +301,6 @@ class Module {
   }
 }
 
-let colors = {
-  red: '#EE6352',
-  blue: '#55C1FF',
-  green: '#3AB795',
-  white: '#FFFFFF',
-  black: '#1E1E1E'
-}
-let emoji = {
-  check: '<:check:379004598486302721>',
-  cross: '<:cross:379004598423388181>',
-  empty: '<:empty:379004598322462732>'
-}
 /** The command run API */
 class CommandAPI {
   constructor(message, handler, command, prefix) {
@@ -337,7 +339,7 @@ class CommandAPI {
     embed.setTitle(title)
     embed.setDescription(message)
     embed.setTimestamp()
-    embed.setFooter(`Volcano ${build.version}`)
+    embed.setFooter(`${this.handler.name} ${build.version}`)
     if(reply) {
       embed.setAuthor(reply.username+'#'+reply.discriminator, reply.displayAvatarURL)
     }
@@ -349,8 +351,8 @@ class CommandAPI {
    * @param {User} reply - Who should the embed "reply" to?
    */
   success(message, reply) {
-    let embed = this.embed(`${emoji.check} \`Success\``, message, reply)
-    embed.setColor(colors.green)
+    let embed = this.embed(`${Emoji.check} \`Success\``, message, reply)
+    embed.setColor(Colors.green)
     return embed
   }
   /**
@@ -359,8 +361,8 @@ class CommandAPI {
    * @param {User} reply - Who should the embed "reply" to?
    */
   error(message, reply) {
-    let embed = this.embed(`${emoji.cross} \`Error\``, message, reply)
-    embed.setColor(colors.red)
+    let embed = this.embed(`${Emoji.cross} \`Error\``, message, reply)
+    embed.setColor(Colors.red)
     return embed
   }
 
@@ -370,6 +372,7 @@ class CommandAPI {
 /**
  * Command argument
  * @typedef {Object} CommandArgument
+ * @property {string} name - Name of the argument to refer to it in the argument object
  * @property {string} [type=string] - Type of argument. String, user, member, channel, role
  * @property {boolean} [required=true] - Whether the argument is required
  */

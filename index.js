@@ -1,3 +1,11 @@
+/**
+ * volcano
+ * 
+ * File...................index.js
+ * Created on.............Wednesday, 20th December 2017 2:31:58 pm
+ * Created by.............Relative
+ * 
+ */
 const Discord = require('discord.js')
 const config = require('./config')
 const path = require('path')
@@ -31,6 +39,10 @@ handler.registerModule(
 ).registerModule(
   new Module('misc', {
     name: 'Miscellaneous'
+  })
+).registerModule(
+  new Module('fun', {
+    name: 'Fun'
   })
 )
 
