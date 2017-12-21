@@ -4,7 +4,8 @@
     "owner": "owner-id"
   },
   "secrets": {
-    "sentry": "DSN"
+    "sentry": "DSN",
+    "blockchain": "blockchain.info API key"
   },
   "rethink": {
     "host": "",
