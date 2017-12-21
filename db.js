@@ -46,7 +46,7 @@ class DUser {
      * @type {User|undefined}
      */
     this.user = user
-    init(this.info)
+    this.init(this.info)
   }
   /**
    * Initialize the DUser object with the data from the DB
