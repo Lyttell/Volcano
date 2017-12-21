@@ -7,7 +7,7 @@
  * 
  */
 const path = require('path')
-const { Command } = require('../handler')
+const { Command } = require('../../handler')
 
 module.exports = class LoadCommand extends Command {
   constructor() {

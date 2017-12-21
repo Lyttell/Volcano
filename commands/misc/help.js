@@ -6,7 +6,7 @@
  * Created by.............Relative
  * 
  */
-const { Command } = require('../handler')
+const { Command } = require('../../handler')
 const RichEmbed = require('discord.js').RichEmbed
 
 module.exports = class HelpCommand extends Command {

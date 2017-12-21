@@ -6,9 +6,9 @@
  * Created by.............Relative
  * 
  */
-const { Command } = require('../handler')
+const { Command } = require('../../handler')
 const axios = require('axios')
-const { Colors } = require('../constants')
+const { Colors } = require('../../constants')
 
 module.exports = class XKCDCommand extends Command {
   constructor() {

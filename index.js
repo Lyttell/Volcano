@@ -8,8 +8,9 @@
  */
 const Discord = require('discord.js')
 const config = require('./config')
+const fs = require('fs-extra')
+const klaw = require('klaw')
 const path = require('path')
-const fs = require('fs')
 
 const bot = new Discord.Client()
 const log = require('./log')
@@ -46,15 +47,20 @@ handler.registerModule(
   })
 )
 
-fs.readdir(path.join(__dirname, 'commands'), (err, files) => {
-  if(err) return log.error('Command registerer error', err)
-  files.forEach((file) => {
-    let p = path.join(__dirname, 'commands', file)
-    let cmd = new (require(p))()
-    cmd.path = p
-    handler.registerCommand(cmd)
+const items = []
+klaw(path.join(__dirname, 'commands'))
+  .on('data', item => items.push(item.path))
+  .on('error', (err, item) => log.error('Command registerer error', err, item.path))
+  .on('end', () => {
+    items.forEach((file) => {
+      if(!file.endsWith('.js')) return
+      let p = file
+      let cmd = new (require(p))()
+      cmd.path = p
+      handler.registerCommand(cmd)
+    })
   })
-})
+
 
 //handler.registerModule(new Module('test', {name: 'test module'})).registerCommand(new (require('./commands/test'))(), 'test')
 

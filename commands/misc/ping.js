@@ -6,7 +6,7 @@
  * Created by.............Relative
  * 
  */
-const { Command } = require('../handler')
+const { Command } = require('../../handler')
 
 module.exports = class PingCommand extends Command {
   constructor() {

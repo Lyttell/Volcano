@@ -7,7 +7,9 @@
  * 
  */
 const log = require('../log')
+const db = require('../db')
 
 module.exports = async (bot, handler, msg) => {
+  db.getUser(msg.author) // Create user if not found in DB on every message
   let res = await handler.onMessage(msg)
 }
