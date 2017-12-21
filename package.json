@@ -1,14 +1,14 @@
 {
   "name": "volcano",
   "version": "0.1.0",
-  "description": "Shitty discord bot",
+  "description": "Discord bot",
   "main": "index.js",
   "scripts": {
     "start": "node index"
   },
   "keywords": [],
-  "author": "Infinity",
-  "license": "ISC",
+  "author": "Relative",
+  "license": "BSD-3-Clause",
   "dependencies": {
     "axios": "^0.17.1",
     "common-errors": "^1.0.4",
