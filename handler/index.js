@@ -19,15 +19,6 @@ const ModuleOptions = {
   name: '*No name defined*',
   color: '#C33C54'
 }
-const CommandOptions = {
-  name: '*No name defined*',
-  description: '*No description defined*',
-  aliases: [],
-  guildOnly: false,
-  dmOnly: false,
-  args: [],
-  ownerOnly: true
-}
 
 /** The command handler */
 class CommandHandler {
@@ -138,18 +129,20 @@ class CommandHandler {
    * 
    * @param {string|Command} id - The command's ID to find 
    * @param {Module|string} [module] - The module to find the command in, if any
+   * @param {boolean} [aliases = false] - Find using aliases
    */
-  findCommand(id, module) {
+  findCommand(id, module, aliases = false) {
     if(id instanceof Command) return id
-    if(typeof module == 'undefined') {
+    if(typeof module === 'undefined') {
       for(let command of this.commands) {
         if(!command) continue
+        if(aliases && command.aliases && command.aliases.indexOf(id) !== -1) return command
         if(command.id == id) return command
       }
       throw new errors.NotFoundError('command')
     } else {
       let module = this.findModule(module)
-      return module.findCommand(id)
+      return module.findCommand(id, aliases)
     }
   } 
   /**
@@ -184,16 +177,26 @@ class CommandHandler {
   /**
    * Message handler for discord.js
    * @param {Message} message 
+   * @param {DUser} user
+   * @param {DGuild} [guild]
    * @returns {boolean} - Did it handle the message and run a command?
    */
-  async onMessage(message) {
+  async onMessage(message, user, guild) {
     let content = message.content
     let prefix
-    for(let p of this.prefixes) {
-      let f = p.replace('@mention', this.client.user.toString())
-      if(content.startsWith(f)) {
-        prefix = f
-        break
+    if(guild && guild.prefix && guild.prefix !== 'volcano.') {
+      if(content.startsWith(`${this.client.user.toString()} `)) {
+        prefix = `${this.client.user.toString()} `
+      } else if(content.startsWith(guild.prefix)) {
+        prefix = guild.prefix
+      }
+    } else {
+      for(let p of this.prefixes) {
+        let f = p.replace('@mention', this.client.user.toString())
+        if(content.startsWith(f)) {
+          prefix = f
+          break
+        }
       }
     }
     if(message.author.id == this.client.user.id || message.author.bot) return false
@@ -201,7 +204,7 @@ class CommandHandler {
     let c = content.substr(prefix.length).split(' ')
     let command
     try {
-      command = this.findCommand(c[0])
+      command = this.findCommand(c[0], undefined, true)
     } catch(err) { return false }
     let prerun = await command._prerun(message)
     if(!prerun) return false
@@ -278,12 +281,15 @@ class Module {
   /**
    * Find a command by its ID
    * @param {string|Command} id 
+   * @param {boolean} [aliases = false] - Find using aliases
    * @return {Command} - Command it found
    */
-  findCommand(id) {
+  findCommand(id, aliases = false) {
     if(id instanceof Command) return id
     if(!this.commands) throw new errors.Error('No commands have been registered under this module')
     for(let command of this.commands) {
+      if(!command) continue
+      if(aliases && command.aliases && command.aliases.indexOf(id) !== -1) return command
       if(command.id == id) {
         return command
       }
@@ -401,7 +407,15 @@ class Command {
      * The command's options
      * @type {CommandOptions}
      */
-    this.options = Object.assign(CommandOptions, options)
+    this.options = Object.assign({
+      name: '*No name defined*',
+      description: '*No description defined*',
+      aliases: [],
+      guildOnly: false,
+      dmOnly: false,
+      args: [],
+      ownerOnly: true
+    }, options)
     
     /**
      * The command's ID

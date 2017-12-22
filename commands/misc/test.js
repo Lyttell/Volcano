@@ -13,7 +13,8 @@ module.exports = class TestCommand extends Command {
     super('test', {
       name: 'Test',
       description: 'test command',
-      module: 'test'
+      module: 'test',
+      ownerOnly: true
     })
   }
   async run(args, msg, api) {

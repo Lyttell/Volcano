@@ -13,11 +13,12 @@ module.exports = class PingCommand extends Command {
     super('ping', {
       name: 'Ping',
       description: 'Ping command',
-      module: 'test'
+      module: 'test',
+      ownerOnly: false
     })
   }
   async run(args, msg, api) {
-    let embed = api.success('Pong', msg.author)
+    let embed = api.success(`🏓 Pong\nPing: ${api.handler.client.ping.toFixed(0)} ms`, msg.author)
     return {embed}
   }
 }

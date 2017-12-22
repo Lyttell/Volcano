@@ -45,6 +45,18 @@ handler.registerModule(
   new Module('fun', {
     name: 'Fun'
   })
+).registerModule(
+  new Module('config', {
+    name: 'Configuration'
+  })
+).registerModule(
+  new Module('money', {
+    name: 'Money'
+  })
+).registerModule(
+  new Module('bitcoin', {
+    name: 'Bitcoin'
+  })
 )
 
 const items = []

@@ -13,7 +13,8 @@ module.exports = class EvalCommand extends Command {
     super('eval', {
       name: 'Eval',
       description: 'Evaluate some scripts',
-      module: 'admin'
+      module: 'admin',
+      ownerOnly: true
     })
   }
   async run(args, msg, api) {

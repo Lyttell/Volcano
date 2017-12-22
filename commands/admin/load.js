@@ -14,7 +14,8 @@ module.exports = class LoadCommand extends Command {
     super('load', {
       name: 'load',
       description: 'Load commands',
-      module: 'admin'
+      module: 'admin',
+      ownerOnly: true
     })
   }
   async run(args, msg, api) {

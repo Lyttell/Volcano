@@ -13,7 +13,8 @@ module.exports = class REPLCommand extends Command {
     super('repl', {
       name: 'repl',
       description: 'REPL',
-      module: 'admin'
+      module: 'admin',
+      ownerOnly: true
     })
     global.user = global.user || []
   }

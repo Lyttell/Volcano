@@ -20,7 +20,8 @@ module.exports = class XKCDCommand extends Command {
         name: 'comic',
         type: 'string',
         required: false
-      }]
+      }],
+      ownerOnly: false
     })
   }
   async run(args, msg, api) {

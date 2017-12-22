@@ -13,7 +13,8 @@ module.exports = class ReloadCommand extends Command {
     super('reload', {
       name: 'reload',
       description: 'Reload commands',
-      module: 'admin'
+      module: 'admin',
+      ownerOnly: true
     })
   }
   async run(args, msg, api) {

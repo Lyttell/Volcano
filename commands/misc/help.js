@@ -14,7 +14,8 @@ module.exports = class HelpCommand extends Command {
     super('help', {
       name: 'help',
       description: 'Help command',
-      module: 'misc'
+      module: 'misc',
+      ownerOnly: false
     })
   }
   async run(args, msg, api) {
@@ -22,7 +23,7 @@ module.exports = class HelpCommand extends Command {
     let modules = this.handler.modules
     let mods = {}
     let membed = new RichEmbed()    
-    membed.setTitle(`ℹ \`Help\``).setColor('#55C1FF').setTimestamp().setFooter(`${api.handler.name} ${build.version}`)
+    membed.setTitle(`ℹ \`Help\``).setColor('#55C1FF').setTimestamp().setFooter(`${api.handler.name} ${build.version} | Questions? https://discord.gg/Y6XJFpd`)
     
     for(let mod of modules) {
       let embed = new RichEmbed()
@@ -30,7 +31,7 @@ module.exports = class HelpCommand extends Command {
       embed.setTitle(`ℹ \`${mod.name}\``)
       embed.setColor('#55C1FF')
       embed.setTimestamp()
-      embed.setFooter(`${api.handler.name} ${build.version}`)
+      embed.setFooter(`${api.handler.name} ${build.version} | Questions? https://discord.gg/Y6XJFpd`)
       for(let cmd of mod.commands) {
         if(!cmd) continue
         let prerun1 = await cmd._prerun(msg)
@@ -46,7 +47,7 @@ module.exports = class HelpCommand extends Command {
     } else if(args[0] && mods[args[0]]) {
       msg.channel.send({embed: mods[args[0]]})
     } else {
-      msg.channel.send({embed: api.error(`The module \`${args[0]}\` doesn't exist.\nRun \`${api.prefix}help\` to view all modules.`)})
+      msg.channel.send({embed: api.error(`The module \`${args[0]}\` doesn't exist.\nRun \`${api.prefix}help\` to view all modules.`).setFooter(`${api.handler.name} ${build.version} | Questions? https://discord.gg/Y6XJFpd`)})
     }
   }
 }
