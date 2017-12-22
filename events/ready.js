@@ -7,11 +7,19 @@
  * 
  */
 const log = require('../log')
+const {Client} = require('discord.js')
+
+// TODO: Playing status rotator
+const games = [
+  `@Volcano help | ${build.version}`
+]
 
  /**
  * Ready event for Volcano
- * @param {Discord.Client} bot 
+ * @param {Client} bot 
  */
 module.exports = (bot) => {
   log.info('Bot is ready!')
+  bot.user.setStatus('dnd')
+  bot.user.setGame(`@Volcano help | ${build.version}`)
 }
