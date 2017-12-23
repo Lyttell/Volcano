@@ -61,7 +61,7 @@ module.exports = class HelpCommand extends Command {
         _cmds[cmd.id] = cmde
         embed.addField(cmd.id, cmd.description)
       }
-      if(embed.fields.length > 1) {
+      if(embed.fields.length >= 1) {
         membed.addField(mod.name, `${api.prefix}help **${mod.id}**`)
         embed.setTitle(`ℹ \`${mod.name}\``)
         embed.setColor(Colors.blue)
