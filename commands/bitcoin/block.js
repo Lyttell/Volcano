@@ -20,13 +20,14 @@ module.exports = class BlockCommand extends Command {
       args: [{
         name: 'block',
         type: 'string',
-        required: true
+        required: false,
+        default: 'latest'
       }],
       ownerOnly: false
     })
   }
   async run(args, msg, api) {
-    const _block = args[0] || 'latest'
+    const _block = args.block.value
     let block
     if(_block == 'latest') {
       block = await blockexplorer.getLatestBlock({

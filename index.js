@@ -93,4 +93,8 @@ fs.readdir(path.join(__dirname, 'events'), (err, files) => {
   })
 })
 
+process.on('unhandledRejection', (reason, p) => {
+  log.error('Unhandled promise rejection', reason, p)
+})
+
 bot.login(config.token)

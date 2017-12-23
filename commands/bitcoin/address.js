@@ -25,7 +25,7 @@ module.exports = class AddressCommand extends Command {
     })
   }
   async run(args, msg, api) {
-    const _address = args[0]
+    const _address = args.address.value
     const address = await blockexplorer.getAddress(_address, {
       apiCode: config.secrets.blockchain,
       limit: 5

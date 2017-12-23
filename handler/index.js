@@ -20,7 +20,9 @@ const ModuleOptions = {
   name: '*No name defined*',
   color: '#C33C54'
 }
-
+String.prototype.replaceAll = function(target, replacement) {
+  return this.split(target).join(replacement);
+};
 const USER_MATCH = /^<@[!]?(\d+)>$/i
 const ROLE_MATCH = /^<@&(\d+)>$/i
 const CHANNEL_MATCH = /^<#(\d+)>$/i
@@ -223,15 +225,13 @@ class CommandHandler {
       if(typeof command.args === 'object' && command.args.length > 0) {
         args = {}
         let firstArg = command.args[0]
-        let usageEmbed = api.error('Usage\n'+typeof command.usage === 'string' ? command.usage.replace('^pfx^', api.prefix) : `${api.prefix}${command.id}`, message.author)
+        let usageEmbed = api.error(`**Usage:**\n${api.prefix}`+typeof command.usage === 'string' ? command.usage.replaceAll('^pfx^', api.prefix) : `${command.id}`, message.author)
           .setFooter(`${api.handler.name} ${build.version} | ${api.prefix}help ${command.id} | Questions? https://discord.gg/Y6XJFpd`)
         if(firstArg.required == true && rawargs.length < 1) {
           return message.channel.send({embed: usageEmbed})
         }
-        console.log('RAL', rawargs.length)
         for(const a of command.args) {
           let idx = command.args.indexOf(a)
-          console.log('arg', idx, a)
           const arg = rawargs[idx] || ''
           switch(a.type) {
             case 'string':
@@ -240,7 +240,7 @@ class CommandHandler {
                   return message.channel.send({embed: usageEmbed})
                 }
               }
-              if(typeof rawargs[idx] === 'string') args[a.name] = new CommandArg(a.name, a.type, rawargs[idx])
+              if(typeof rawargs[idx] === 'string' || typeof a.default === 'string') args[a.name] = new CommandArg(a.name, a.type, rawargs[idx] || a.default)
               break
             case 'user':
               if(a.required) {
@@ -314,7 +314,7 @@ class CommandHandler {
                   return message.channel.send({embed: usageEmbed})
                 }
               }
-              if(typeof rawargs[idx] === 'string') args[a.name] = new CommandArg(a.name, a.type, rawargs[idx])
+              if(typeof rawargs[idx] === 'string' || typeof a.default === 'string') args[a.name] = new CommandArg(a.name, a.type,  rawargs[idx] || a.default)
               break
           }
         }
@@ -509,6 +509,8 @@ class CommandArg {
  * @property {string} name - Name of the argument to refer to it in the argument object
  * @property {string} [type=string] - Type of argument. String, user, member, channel, role
  * @property {boolean} [required=true] - Whether the argument is required
+ * @property {string} [default] - Value to default to if there is no value
+ * @property {string} [description] - Argument's descripton
  */
 
  
@@ -524,6 +526,7 @@ class Command {
    * @property {boolean} [dmOnly=false] - Whether the command should only be ran in a DM channel
    * @property {CommandArgument[]} [args] - Command arguments
    * @property {boolean} [ownerOnly=true] - Whether the command can only be ran by the owner of the bot
+   * @property {string} [usage] - Usage text to show in help
    */
   /**
    * Create a command
@@ -610,6 +613,12 @@ class Command {
      * @type {Module}
      */
     this.module = null
+
+    /**
+     * The command's usage text
+     * @type {string|undefined}
+     */
+    this.usage = this.options.usage
   }
   /**
    * Internal prerun method, do not call or override!!

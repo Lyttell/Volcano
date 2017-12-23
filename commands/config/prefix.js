@@ -27,8 +27,8 @@ module.exports = class PrefixCommand extends Command {
   }
   async run(args, msg, api) {
     const guild = await db.getGuild(msg.guild)
-    if(typeof args[0] === 'string') {
-      const prefix = args[0] || 'reset'
+    if(typeof args.prefix.value === 'string') {
+      const prefix = args.prefix.value
       if(!msg.member.hasPermission('MANAGE_GUILD')) return api.error('You require the \`Manage Server\` permission to run this command.')
       if(prefix === 'reset') {
         await guild.setPrefix('volcano.')

@@ -19,14 +19,15 @@ module.exports = class XKCDCommand extends Command {
       args: [{
         name: 'comic',
         type: 'string',
-        required: false
+        required: false,
+        default: 'latest'
       }],
       ownerOnly: false
     })
   }
   async run(args, msg, api) {
-    const comic = args[0] || 0
-    const url = comic === 0 ? 'https://xkcd.com/info.0.json' : `https://xkcd.com/${encodeURIComponent(comic)}/info.0.json`
+    const comic = args.comic.value
+    const url = comic === 'latest' ? 'https://xkcd.com/info.0.json' : `https://xkcd.com/${encodeURIComponent(comic)}/info.0.json`
     try {
       const res = await axios.get(url)
       const xkcd = res.data

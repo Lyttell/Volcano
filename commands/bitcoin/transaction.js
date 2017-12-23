@@ -25,7 +25,7 @@ module.exports = class TransactionCommand extends Command {
     })
   }
   async run(args, msg, api) {
-    const _transaction = args[0]
+    const _transaction = args.transaction.value
     const tx = await blockexplorer.getTx(_transaction, {
       apiCode: config.secrets.blockchain
     })

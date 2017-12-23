@@ -16,7 +16,14 @@ module.exports = class HelpCommand extends Command {
       name: 'help',
       description: 'Help command',
       module: 'misc',
-      ownerOnly: false
+      ownerOnly: false,
+      args: [{
+        name: 'module',
+        type: 'string',
+        required: false,
+        description: 'The module/command you want to look up'
+      }],
+      usage: `help - Shows every module you have access to\n^pfx^help [module/command] - Look up the help for a module or command`
     })
   }
   async run(args, msg, api) {
@@ -25,16 +32,16 @@ module.exports = class HelpCommand extends Command {
     let mods = {}
     let _cmds = {}
     let membed = new RichEmbed()    
-    membed.setTitle(`ℹ \`Help\``).setColor('#55C1FF').setTimestamp().setFooter(`${api.handler.name} ${build.version} | Questions? https://discord.gg/Y6XJFpd`)
+    membed.setTitle(`ℹ \`Help\``).setColor(Colors.blue).setTimestamp().setFooter(`${api.handler.name} ${build.version} | Questions? https://discord.gg/Y6XJFpd`)
     
-    for(let mod of modules) {
+    for(const mod of modules) {
       let embed = new RichEmbed()
       membed.addField(mod.name, `${api.prefix}help **${mod.id}**`)
       embed.setTitle(`ℹ \`${mod.name}\``)
       embed.setColor(Colors.blue)
       embed.setTimestamp()
       embed.setFooter(`${api.handler.name} ${build.version} | Questions? https://discord.gg/Y6XJFpd`)
-      for(let cmd of mod.commands) {
+      for(const cmd of mod.commands) {
         if(!cmd) continue
         let prerun1 = await cmd._prerun(msg)
         if(!prerun1) continue
@@ -44,11 +51,11 @@ module.exports = class HelpCommand extends Command {
         cmde.setTitle(`ℹ \`${cmd.name}\``)
         cmde.setColor(Colors.blue)
         cmde.addField('Description', cmd.description)
-        cmde.addField('Usage', typeof cmd.usage === 'string' ? cmd.usage.replace('^pfx^', api.prefix) : `${api.prefix}${cmd.id}`)
+        cmde.addField('Usage', api.prefix + typeof cmd.usage === 'string' ? cmd.usage.replaceAll('^pfx^', api.prefix) : `${cmd.id}`)
         let argz = ''
-        if(cmd.args) {
+        if(typeof cmd.args === 'object' && cmd.args.length > 0) {
           for(const arg of cmd.args) {
-            argz += `${arg.required ? '<' : '['}${arg.name}${arg.required ? '>' : ']'} - ${arg.description || '*No argument description'}\n`
+            argz += `${arg.required ? '<' : '['}${arg.name}${arg.required ? '>' : ']'} - ${arg.description || '*No argument description*'}\n`
           }
           if(argz.length > 2) {
             argz = argz.substr(0, argz.length - 1)
@@ -59,16 +66,16 @@ module.exports = class HelpCommand extends Command {
         _cmds[cmd.id] = cmde
         embed.addField(cmd.id, cmd.description)
       }
-      mods[mod.id] = embed
+      if(embed.fields.length > 1) mods[mod.id] = embed
     }
-    if(!args || !args[0]) {
+    if(!args || !args.module) {
       return membed
-    } else if(args[0] && mods[args[0]]) {
-      return mods[args[0]]
-    } else if(args[0] && _cmds[args[0]]) {
-      return _cmds[args[0]]
+    } else if(args.module && mods[args.module.value]) {
+      return mods[args.module.value]
+    } else if(args.module && _cmds[args.module.value]) {
+      return _cmds[args.module.value]
     } else {
-      return api.error(`The module \`${args[0]}\` doesn't exist.\nRun \`${api.prefix}help\` to view all modules.`)
+      return api.error(`The module or command \`${args.module.value}\` doesn't exist, or you do not have permission to view it.\nRun \`${api.prefix}help\` to view all modules.`)
         .setFooter(`${api.handler.name} ${build.version} | Questions? https://discord.gg/Y6XJFpd`)
     }
   }
