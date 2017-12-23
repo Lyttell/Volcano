@@ -13,7 +13,7 @@ module.exports = class PingCommand extends Command {
     super('ping', {
       name: 'Ping',
       description: 'Ping command',
-      module: 'test',
+      module: 'misc',
       ownerOnly: false
     })
   }
