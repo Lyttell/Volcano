@@ -110,6 +110,7 @@ class CommandHandler {
     command.module = mod
     mod.commands.push(command)
     this.commands.push(command)
+    if(typeof command.postConstruct === 'function') command.postConstruct(this)
     return this
   }
 

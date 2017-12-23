@@ -24,6 +24,7 @@ const handler = new CommandHandler({
 })
 
 const package = require('./package.json')
+global.config = config
 global.build = {
   package: package,
   version: package.version
