@@ -18,10 +18,6 @@ module.exports = class TestCommand extends Command {
         name: 'test',
         required: true,
         type: 'string'
-      }, {
-        name: 'fuck',
-        required: true,
-        type: 'user'
       }],
       ownerOnly: true
     })
