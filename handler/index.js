@@ -9,6 +9,7 @@
 const errors = require('common-errors')
 const { Message, Client, User, GuildMember, Channel, TextChannel, DMChannel, Role, RichEmbed } = require('discord.js')
 const { Colors, Emoji } = require('../constants')
+const log = require('../log')
 const HandlerOptions = {
   client: null,
   name: '*No name defined*',
@@ -19,6 +20,10 @@ const ModuleOptions = {
   name: '*No name defined*',
   color: '#C33C54'
 }
+
+const USER_MATCH = /^<@[!]?(\d+)>$/i
+const ROLE_MATCH = /^<@&(\d+)>$/i
+const CHANNEL_MATCH = /^<#(\d+)>$/i
 
 /** The command handler */
 class CommandHandler {
@@ -213,7 +218,108 @@ class CommandHandler {
     if(!prerun2) return false
     try {
       let api = new CommandAPI(message, this, command, prefix)
-      let response = await command.run(c.splice(1), message, api)
+      let args = c.splice(1)
+      let rawargs = args
+      if(typeof command.args === 'object' && command.args.length > 0) {
+        args = {}
+        let firstArg = command.args[0]
+        let usageEmbed = api.error('Usage\n'+typeof command.usage === 'string' ? command.usage.replace('^pfx^', api.prefix) : `${api.prefix}${command.id}`, message.author)
+          .setFooter(`${api.handler.name} ${build.version} | ${api.prefix}help ${command.id} | Questions? https://discord.gg/Y6XJFpd`)
+        if(firstArg.required == true && rawargs.length < 1) {
+          return message.channel.send({embed: usageEmbed})
+        }
+        console.log('RAL', rawargs.length)
+        for(const a of command.args) {
+          let idx = command.args.indexOf(a)
+          console.log('arg', idx, a)
+          const arg = rawargs[idx] || ''
+          switch(a.type) {
+            case 'string':
+              if(a.required) {
+                if(typeof rawargs[idx] !== 'string') {
+                  return message.channel.send({embed: usageEmbed})
+                }
+              }
+              if(typeof rawargs[idx] === 'string') args[a.name] = new CommandArg(a.name, a.type, rawargs[idx])
+              break
+            case 'user':
+              if(a.required) {
+                if(typeof rawargs[idx] !== 'string' || !USER_MATCH.test(arg)) {
+                  return message.channel.send({embed: usageEmbed})
+                }
+              }
+              if(typeof rawargs[idx] === 'string' && USER_MATCH.test(arg)) {
+                let matches = arg.match(USER_MATCH)
+                if(matches.length < 2 && a.required) {
+                  return message.channel.send({
+                    embed: usageEmbed
+                  })
+                }
+                if(matches.length > 1) {
+                  let id = matches[1]
+                  try {
+                    let user = await this.client.fetchUser(id)
+                    args[a.name] = new CommandArg(a.name, a.type, user)
+                  } catch(err) {
+                    log.error('Couldn\'t find a user ' + id + ' ' + msg.author.id + ' ' + msg.id + ' ' + msg.channel.id, err)
+                    return message.channel.send({
+                      embed: api.error(`Could not find that user. Go to the support server linked in the footer of this embed and ask for help.`, msg.author)
+                        .setFooter(`${api.handler.name} ${build.version} | ${api.prefix}help ${command.id} | Questions? https://discord.gg/Y6XJFpd`)
+                    })
+                  }
+                }
+              }
+              break
+            case 'channel':
+              if(!message.guild) {
+                return message.channel.send({embed: usageEmbed}) 
+              }
+              if(a.required) {
+                if(typeof rawargs[idx] !== 'string' || !CHANNEL_MATCH.test(arg)) {
+                  return message.channel.send({embed: usageEmbed})
+                }
+              }
+              if(typeof rawargs[idx] === 'string' && CHANNEL_MATCH.test(arg)) {
+                let matches = arg.match(CHANNEL_MATCH)
+                if(matches.length < 2 && a.required) {
+                  return message.channel.send({
+                    embed: usageEmbed
+                  })
+                }
+                if(matches.length > 1) {
+                  let id = matches[1]
+                  try {
+                    let channel = message.guild.channels.get(id)
+                    if(!channel) {
+                      log.error('Couldn\'t find a channel ' + id + ' ' + msg.author.id + ' ' + msg.id + ' ' + msg.channel.id, err)
+                      return message.channel.send({
+                        embed: api.error(`Could not find that channel. Go to the support server linked in the footer of this embed and ask for help.`, msg.author)
+                          .setFooter(`${api.handler.name} ${build.version} | ${api.prefix}help ${command.id} | Questions? https://discord.gg/Y6XJFpd`)
+                      })
+                    }
+                    args[a.name] = new CommandArg(a.name, a.type, channel)
+                  } catch(err) {
+                    log.error('Couldn\'t find a channel ' + id + ' ' + msg.author.id + ' ' + msg.id + ' ' + msg.channel.id, err)
+                    return message.channel.send({
+                      embed: api.error(`Could not find that channel. Go to the support server linked in the footer of this embed and ask for help.`, msg.author)
+                        .setFooter(`${api.handler.name} ${build.version} | ${api.prefix}help ${command.id} | Questions? https://discord.gg/Y6XJFpd`)
+                    })
+                  }
+                }
+              }
+              break
+            default:
+              if(a.required) {
+                if(typeof rawargs[idx] !== 'string') {
+                  return message.channel.send({embed: usageEmbed})
+                }
+              }
+              if(typeof rawargs[idx] === 'string') args[a.name] = new CommandArg(a.name, a.type, rawargs[idx])
+              break
+          }
+        }
+      }
+      let response = await command.run(args, message, api)
       if(!!response) {
         if(response.title && response.description) {
           return message.channel.send({
@@ -375,6 +481,27 @@ class CommandAPI {
 
 }
 
+class CommandArg {
+  constructor(name, type, value) {
+    /**
+     * Argument name
+     * @type {string}
+     */
+    this.name = name
+
+    /**
+     * Argument type
+     * @type {string}
+     */
+    this.type = type
+
+    /**
+     * Argument value
+     * @type {string|User|Guild|GuildMember|DGuild|DUser|Channel|Role}
+     */
+    this.value = value
+  }
+}
 
 /**
  * Command argument

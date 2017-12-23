@@ -14,11 +14,22 @@ module.exports = class TestCommand extends Command {
       name: 'Test',
       description: 'test command',
       module: 'test',
+      args: [{
+        name: 'test',
+        required: true,
+        type: 'string'
+      }, {
+        name: 'fuck',
+        required: true,
+        type: 'user'
+      }],
       ownerOnly: true
     })
   }
   async run(args, msg, api) {
-    let embed = api.success('Test command succeeded!', msg.author)
-    return {embed}
+    const response = `\`\`\`json
+${JSON.stringify(args, null, 2)}
+\`\`\``
+    return response
   }
 }
