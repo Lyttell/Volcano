@@ -36,11 +36,6 @@ module.exports = class HelpCommand extends Command {
     
     for(const mod of modules) {
       let embed = new RichEmbed()
-      membed.addField(mod.name, `${api.prefix}help **${mod.id}**`)
-      embed.setTitle(`ℹ \`${mod.name}\``)
-      embed.setColor(Colors.blue)
-      embed.setTimestamp()
-      embed.setFooter(`${api.handler.name} ${build.version} | Questions? https://discord.gg/Y6XJFpd`)
       for(const cmd of mod.commands) {
         if(!cmd) continue
         let prerun1 = await cmd._prerun(msg)
@@ -66,7 +61,14 @@ module.exports = class HelpCommand extends Command {
         _cmds[cmd.id] = cmde
         embed.addField(cmd.id, cmd.description)
       }
-      if(embed.fields.length > 1) mods[mod.id] = embed
+      if(embed.fields.length > 1) {
+        membed.addField(mod.name, `${api.prefix}help **${mod.id}**`)
+        embed.setTitle(`ℹ \`${mod.name}\``)
+        embed.setColor(Colors.blue)
+        embed.setTimestamp()
+        embed.setFooter(`${api.handler.name} ${build.version} | Questions? https://discord.gg/Y6XJFpd`)
+        mods[mod.id] = embed
+      }
     }
     if(!args || !args.module) {
       return membed
