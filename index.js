@@ -12,7 +12,9 @@ const fs = require('fs-extra')
 const klaw = require('klaw')
 const path = require('path')
 
-const bot = new Discord.Client()
+const bot = new Discord.Client({
+  fetchAllMembers: true
+})
 const log = require('./log')
 
 const { CommandHandler, Command, Module } = require('./handler')
